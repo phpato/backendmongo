@@ -3,13 +3,16 @@ var router = express.Router();
 const Usuario = require('../models/usuario')
 const bcrypt = require('bcrypt')
 const _ = require('underscore')
+const jwt = require('jsonwebtoken')
+const {verificaToken,verificaAdmin}  = require('../middlewares/autenticacion')
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
 //api para agregar un usuario
-router.post('/usuario', function(req, res, next) {
+router.post('/usuario',verificaToken,verificaAdmin, function(req, res, next) {
   
   let body = req.body
   let usuario = new Usuario({
@@ -33,7 +36,7 @@ router.post('/usuario', function(req, res, next) {
 
 });
 //api para actualizar la informacion de un usuario
-router.put('/usuario/:id', function(req, res, next) {
+router.put('/usuario/:id',verificaToken,verificaAdmin, function(req, res, next) {
   
   let id = req.params.id
   //funcion para solo obtener los campos deseados y evitar inputs extras,(undersocre.js)
@@ -59,7 +62,7 @@ router.put('/usuario/:id', function(req, res, next) {
 
 })
 //api para obtener usuarios con parametros para la paginacion de los usuarios
-router.get('/usuario',function(req,res,next){
+router.get('/usuario',verificaToken, function(req, res, next) {
   
   let desde = req.query.desde || 0
   desde = Number(desde)
@@ -87,7 +90,7 @@ router.get('/usuario',function(req,res,next){
 
 })
 //api para borrar un usuario fisicamente
-router.delete('/usuario/:id',function (req,res,next) {
+router.delete('/usuario/:id',verificaToken,verificaAdmin,function (req,res,next) {
   let id = req.params.id
   Usuario.findByIdAndRemove(id,(err,usuarioBorrado) =>{
     //si hay un error, 400 con el error
@@ -113,7 +116,7 @@ router.delete('/usuario/:id',function (req,res,next) {
 
 
 //api para borrar logicamente a un usuario
-router.delete('/usuario_borrado_logico/:id', function(req, res, next) {
+router.delete('/usuario_borrado_logico/:id', verificaToken,verificaAdmin, function(req, res, next) {
   
   let id = req.params.id
   //para visualizar mejor el codigo
