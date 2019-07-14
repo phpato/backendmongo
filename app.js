@@ -16,11 +16,11 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 
  
-mongoose.connect("mongodb+srv://patomar:-teamochispa8@cluster0-x6qsf.mongodb.net/test",{useNewUrlParser: true }, (err,res) =>{
+mongoose.connect("mongodb+srv://usuarioprueba:usuarioprueba123@cluster0-x6qsf.mongodb.net/test",{useNewUrlParser: true }, (err,res) =>{
   if(err){
     throw err;
   }
-  console.log("conexion exitosa a mongo db");
+  console.log("conexion exitosa a mongo atlas");
 });
 
 // view engine setup
