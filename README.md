@@ -11,7 +11,8 @@ Usuario con ADMIN_ROLE
 email: test1@gmail.com
 password: 123456
 
-Usuario USER_ROLE
+Usuario con USER_ROLE
+email: test3@gmail.com
 password: 123456
 la ruta para el login es:
 https://patriciocabrera-webpage.herokuapp.com/login/login
