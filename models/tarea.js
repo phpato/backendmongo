@@ -3,10 +3,7 @@ const uniqueValidator = require('mongoose-unique-validator')
 
 
 let Schema = mongoose.Schema
-let rolesValidos = {
-    values: ['ADMIN_ROLE','USER_ROLE'],
-    message:'{VALUE} no es un role valido'
-}
+
 let tareaSchema = new Schema({
     nombre:{
         type: String,
@@ -15,11 +12,11 @@ let tareaSchema = new Schema({
     descripcion: {
         type: String,
         unique: true,
-        required: [true,"El correo es obligatorio"]
+        required: [true,"La descrición es obligatoria"]
     },
-    estado: {
-        type: String,
-        required: [true,"La contraseña es obligatoria"]
+    terminado: {
+        type: Boolean,
+        default: false
     }
 });
 
