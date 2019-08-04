@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const Tarea = require('../models/tarea')
+const Owner = require('../models/owner')
+const Pet = require('../models/pet')
 const _ = require('underscore')
 const jwt = require('jsonwebtoken')
 const {
@@ -10,15 +11,16 @@ const {
 
 
 //api para agregar una tarea
-router.post('/tarea', function (req, res, next) {
+router.post('/propietario', function (req, res, next) {
 
   let body = req.body
-  let tarea = new Tarea({
+  let owner = new Owner({
     nombre: body.nombre,
-    descripcion: body.descripcion,
+    apellido: body.apellido,
+    email: body.email,
   })
 
-  tarea.save((err, tareaDB) => {
+  owner.save((err, ownerDB) => {
 
     if (err) {
       return res.status(400).json({
@@ -29,24 +31,24 @@ router.post('/tarea', function (req, res, next) {
 
     res.json({
       ok: true,
-      usuario: tareaDB
+      usuario: ownerDB
     })
   })
 
 })
 
 //api para obtener usuarios con parametros para la paginacion de los usuarios (solo si es administrador)
-router.get('/tarea', function (req, res, next) {
+router.get('/propietario', function (req, res, next) {
 
   let desde = req.query.desde || 0
   desde = Number(desde)
   let limite = req.query.limite || 0
   limite = Number(limite)
   //consulta pero filtrando los campos
-  Tarea.find({}, 'nombre descripcion terminado')
+  Owner.find({}, 'nombre apellido email')
     .skip(desde)
     .limit(limite)
-    .exec((err, tareas) => {
+    .exec((err, owners) => {
       //si hay un error, 400 con el error
       if (err) {
         return res.status(400).json({
@@ -54,13 +56,13 @@ router.get('/tarea', function (req, res, next) {
           err
         })
       }
-      Tarea.count({}, (err, conteo) => {
+      Owner.count({}, (err, conteo) => {
         //200 por default con el objeto actualizado
         //ademas de contar los registros uso undersocre para contar la cantidad de objetos en la coleccion de usuarios
         res.json({
           ok: true,
-          tareas,
-          cantidad_usuarios: _.size(tareas)
+          data: owners,
+          cantidad_usuarios: _.size(owners)
         })
       })
 
@@ -68,9 +70,9 @@ router.get('/tarea', function (req, res, next) {
 
 })
 //api para borrar una tarea fisicamente(borrar el registro, borrado no logico)
-router.delete('/tarea/:id', verificaToken, verificaAdmin, function (req, res, next) {
+router.delete('/propietario/:id', function (req, res, next) {
   let id = req.params.id
-  Tarea.findByIdAndRemove(id, (err, tareaBorrada) => {
+  Owner.findByIdAndRemove(id, (err, propietarioBorrado) => {
     //si hay un error, 400 con el error
     if (err) {
       return res.status(400).json({
@@ -80,35 +82,27 @@ router.delete('/tarea/:id', verificaToken, verificaAdmin, function (req, res, ne
     }
 
     //si el usuario no se encuentra, devolver error
-    if (!tareaBorrada) {
+    if (!propietarioBorrado) {
       return res.status(400).json({
         ok: false,
         err: {
-          message: 'Tarea no encontrada'
+          message: 'Propietario no encontrado'
         }
       })
     }
     //todo bien
     res.json({
       ok: true,
-      tareaBorrada
+      propietarioBorrado
     })
   })
 })
 
-//api para borrar logicamente a un usuario
-router.put('/terminar_tarea/:id', verificaToken, verificaAdmin, function (req, res, next) {
-
+//api para borrar una tarea fisicamente(borrar el registro, borrado no logico)
+router.get('/propietario/:id', function (req, res, next) {
   let id = req.params.id
-  //para visualizar mejor el codigo
-  let actualizaEstado = {
-    terminado: true
-  }
-  Tarea.findByIdAndUpdate(id, actualizaEstado, {
-    new: true,
-    runValidators: true,
-    context: 'query'
-  }, (err, tareaDB) => {
+
+  Pet.find({owner: id}, (err, propietarioMascota) => {
     //si hay un error, 400 con el error
     if (err) {
       return res.status(400).json({
@@ -116,25 +110,22 @@ router.put('/terminar_tarea/:id', verificaToken, verificaAdmin, function (req, r
         err
       })
     }
-    //si la tarea no se encuentra, devolver error
-    if (!tareaDB) {
+
+    //si el usuario no se encuentra, devolver error
+    if (!propietarioMascota) {
       return res.status(400).json({
         ok: false,
         err: {
-          message: 'Tarea no encontrada'
+          message: 'Propietario sin mascotas'
         }
       })
     }
-    //200 por default con el objeto actualizado
+    //todo bien
     res.json({
       ok: true,
-      usuario: tareaDB,
-      message: "tarea marcada como terminada"
+      propietarioMascota
     })
-
   })
-
 })
-
 
 module.exports = router;

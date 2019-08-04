@@ -9,8 +9,14 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/usuario');
 var loginRouter = require('./routes/login');
 var tareasRouter = require('./routes/tarea');
+var ownersRouter = require('./routes/owner');
+var petsRouter = require('./routes/pet');
 
-var app = express();
+var cors = require('cors')
+var app = express()
+ 
+
+
 const mongoose = require('mongoose');
 
 mongoose.set('useFindAndModify', false);
@@ -28,6 +34,7 @@ mongoose.connect("mongodb+srv://usuarioprueba:usuarioprueba123@cluster0-x6qsf.mo
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+app.use(cors())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -41,6 +48,9 @@ app.use('/', indexRouter);
 app.use('/usuarios', usersRouter);
 app.use('/login', loginRouter);
 app.use('/tareas', tareasRouter);
+app.use('/propietarios', ownersRouter);
+app.use('/mascotas', petsRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
